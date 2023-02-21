@@ -12,7 +12,7 @@ class MainController extends AbstractController
     #[Route('/home', name: 'main_home')]
     public function home(): Response
     {
-        $username = "François";
+        $username = "Françoy";
         $serie = [
             'Title' => 'Community',
             'Year' => 2009,
