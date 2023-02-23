@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Serie;
+use App\Form\SerieType;
 use App\Repository\SerieRepository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -15,10 +18,12 @@ class SerieController extends AbstractController
     #[Route('/list', name: 'list')]
     public function list(SerieRepository $serieRepository): Response
     {
-        //TODO Récupérer la liste des séries en BDD
+
 //        $series = $serieRepository->findAll();
 
-        $series = $serieRepository->findBy(["status" => "ended"], ["popularity" => "DESC"]);
+//        $series = $serieRepository->findBy([], ['vote' => 'desc']);
+
+        $series = $serieRepository->findBestSeries();
 
         dump($series);
         return $this->render('serie/list.html.twig', [
@@ -45,60 +50,34 @@ class SerieController extends AbstractController
     }
 
     #[Route('/add', name: 'add')]
-    public function add(SerieRepository $serieRepository, EntityManager $entityManager): Response
+    public function add(
+        SerieRepository $serieRepository,
+        Request $request
+    ): Response
     {
-//        $serie = new Serie();
-//
-//        $serie
-//            ->setName("The Office")
-//            ->setBackdrop("backdrop.png")
-//            ->setDateCreated(new \DateTime())
-//            ->setGenres("Commedy")
-//            ->setFirstAirDate(new \DateTime('2022-02-02'))
-//            ->setLastAirDate(new \DateTime('- 6 month'))
-//            ->setPopularity(850.92)
-//            ->setPoster("poster.png")
-//            ->setTmdbId(123456)
-//            ->setVote(8.5)
-//            ->setStatus("ended");
-//
-//        $serie2 = new Serie();
-//        $serie2
-//            ->setName("Le bureau des légendes")
-//            ->setBackdrop("backdrop.png")
-//            ->setDateCreated(new \DateTime())
-//            ->setGenres("Commedy")
-//            ->setFirstAirDate(new \DateTime('2022-02-02'))
-//            ->setLastAirDate(new \DateTime('- 6 month'))
-//            ->setPopularity(850.92)
-//            ->setPoster("poster.png")
-//            ->setTmdbId(123456)
-//            ->setVote(8.5)
-//            ->setStatus("ended");
-//
-//
-//        $entityManager->persist($serie);
-//        $entityManager->persist($serie2);
-//        $entityManager->flush();
+        $serie = new Serie();
+        //création d'une intance de form lié à une instance de série
+        $serieForm = $this->createForm(SerieType::class, $serie);
 
-//        dump($serie);
-//
-//        //enrefistrement en BDD
-//        $serieRepository->save($serie);
-//
-//        dump($serie);
-//
-//        $serie->setName("The last of us");
-//        $serieRepository->save($serie, true);
-//
-//        dump($serie);
-//
+        //methode qui extrait les éléments du formulaire de la requete
+        $serieForm->handleRequest($request);
 
+        if ($serieForm->isSubmitted()){
 
+            $serieRepository->save($serie, true);
 
-        return $this->render('serie/add.html.twig');
+            $this->addFlash("success", "Serie added !");
 
+            return $this->redirectToRoute('serie_show', ['id' => $serie->getId()]);
 
+        }
+
+        dump($serie);
+
+        //TODO Créer un formulaire d'ajout de série
+        return $this->render('serie/add.html.twig', [
+            'serieForm' => $serieForm->createView()
+        ]);
     }
 
 

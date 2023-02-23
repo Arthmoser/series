@@ -4,5 +4,26 @@
 
 {% block body %}
     <h2>Add a new serie !</h2>
+
+    {# Déclenche l'affichage du form #}
+
+{#    {{ form(serieForm) }}#}
+
+    {#Début du form #}
+    {{ form_start(serieForm) }}
+
+    <div class="machin">
+        {{ form_label(serieForm.name) }}
+        {{ form_widget(serieForm.name) }}
+        {{ form_errors(serieForm.name) }}
+    </div>
+
+    {{ form_rest(serieForm) }}
+
+    <button>Add serie !</button>
+
+    {#Fin du form #}
+    {{ form_end(serieForm) }}
+
 {% endblock %}
 
