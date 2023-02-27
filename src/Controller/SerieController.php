@@ -15,19 +15,27 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/serie', name: 'serie_')]
 class SerieController extends AbstractController
 {
-    #[Route('/list', name: 'list')]
-    public function list(SerieRepository $serieRepository): Response
+    #[Route('/list/{page}', name: 'list', requirements: ['page' => '\d+'])]
+    public function list(SerieRepository $serieRepository, int $page = 1): Response
     {
 
-//        $series = $serieRepository->findAll();
+        $nbSerieMax = $serieRepository->count([]);
+        $maxPage = ceil($nbSerieMax / SerieRepository::SERIE_LIMIT);
 
-//        $series = $serieRepository->findBy([], ['vote' => 'desc']);
+        if ($page >= 1 && $page <= $maxPage) {
 
-        $series = $serieRepository->findBestSeries();
+        $series = $serieRepository->findBestSeries($page);
+
+        } else {
+            throw $this->createNotFoundException("Oops ! Page not found !");
+        }
+
 
         dump($series);
         return $this->render('serie/list.html.twig', [
-            "series" => $series
+            'series' => $series,
+            'currentPage' => $page,
+            'maxPage' => $maxPage
         ]);
     }
 
@@ -62,7 +70,7 @@ class SerieController extends AbstractController
         //methode qui extrait les éléments du formulaire de la requete
         $serieForm->handleRequest($request);
 
-        if ($serieForm->isSubmitted()){
+        if ($serieForm->isSubmitted() && $serieForm->isValid()){
 
             $serieRepository->save($serie, true);
 
@@ -74,7 +82,6 @@ class SerieController extends AbstractController
 
         dump($serie);
 
-        //TODO Créer un formulaire d'ajout de série
         return $this->render('serie/add.html.twig', [
             'serieForm' => $serieForm->createView()
         ]);
