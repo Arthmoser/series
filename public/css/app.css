@@ -134,11 +134,15 @@ textarea{
 }
 
 .flash-success {
-    background-color: lawngreen
+    background-color: lawngreen;
 }
 
 .flash-error {
-    background-color: red
+    background-color: red;
+}
+
+.flash-warning {
+    background-color: orange;
 }
 
 /************************** Module 7 Relations *****************************************/

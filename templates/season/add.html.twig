@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme seasonForm 'view/formTheme/formTheme.html.twig' %}
+
+{% block title %} {{ parent()}} | ADD {% endblock %}
+
+{% block body %}
+    <h2>Add a new season !</h2>
+
+    {# Déclenche l'affichage du form #}
+
+    {#Début du form #}
+    {{ form_start(seasonForm) }}
+    {{ form_widget(seasonForm) }}
+
+
+    <button>Add season !</button>
+
+    {#Fin du form #}
+    {{ form_end(seasonForm) }}
+
+{% endblock %}
